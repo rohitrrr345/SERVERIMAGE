@@ -8,16 +8,13 @@ import cloudinary from "cloudinary";
 import MongoStore from 'connect-mongo';
 import cors from "cors";
 
-// Load environment variables from .env file
 dotenv.config({ path: './config/config.env' });
 
 // Connect to MongoDB
 connectDB();
 
-// Initialize Express app
 const app = express();
 
-// Middleware for JSON and URL-encoded data
 app.use(express.json());
 app.use(
   express.urlencoded({
@@ -25,23 +22,20 @@ app.use(
   })
 );
 
-// Session Middleware with MongoStore
 try {
   app.use(
     session({
-      secret: process.env.SESSION_SECRET, // Ensure this is defined in .env
-      resave: false, // Do not save session if it hasn't been modified
-      saveUninitialized: false, // Do not create session until something is stored
+      secret: process.env.SESSION_SECRET, 
+      resave: false, 
+      saveUninitialized: false, 
       store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URI, // MongoDB connection string from .env
-        collectionName: 'sessions', // Name of the session collection in MongoDB
+        mongoUrl: process.env.MONGO_URI,
+        collectionName: 'sessions', 
       }),
       cookie: {
-        maxAge: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
-        httpOnly: true,
-        secure: true, // Only send cookies over HTTPS in production
+        maxAge: 1000 * 60 * 60 * 24 * 7,  
+              httpOnly: true,
 
-        sameSite:  "none", // 'none' for cross-origin in production, 'lax' for local
       },
     })
   );
@@ -49,21 +43,19 @@ try {
   console.error('Failed to connect to session store:', error);
 }
 
-// CORS Middleware
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL, // Frontend URL from .env
+    origin: process.env.FRONTEND_URL, 
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
-// Cloudinary Configuration
 cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLIENT_NAME, // Cloudinary name from .env
-  api_key: process.env.CLOUDINARY_CLIENT_API, // Cloudinary API key from .env
-  api_secret: process.env.CLOUDINARY_CLIENT_SECRET, // Cloudinary API secret from .env
-});
+  cloud_name: process.env.CLOUDINARY_CLIENT_NAME, 
+  api_key: process.env.CLOUDINARY_CLIENT_API, 
+  api_secret: process.env.CLOUDINARY_CLIENT_SECRET, 
+})
 
 // Routes
 app.use('/api/users', userRoutes);

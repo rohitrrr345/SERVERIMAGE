@@ -1,7 +1,6 @@
 import cloudinary from 'cloudinary';
 import Image from '../models/Image.js';
 import getDataUri from '../uploads/dataUri.js';
-// Configure Cloudinary
 
 export const uploadImage = async (req, res) => {
     try {
@@ -25,7 +24,7 @@ export const uploadImage = async (req, res) => {
     user: userId,
     public_id: mycloud.public_id,
 
-    url: mycloud.secure_url, // URL returned from Cloudinary
+    url: mycloud.secure_url, 
   })
   console.log(userId)
   await newImage.save();
@@ -55,7 +54,6 @@ export const uploadImage = async (req, res) => {
       const userId = req.session.user._id;
       console.log(userId);
   
-      // Correct query to find images by user field, not by _id
       const images = await Image.find({ user: userId });
   
       res.status(201).json({
@@ -85,7 +83,7 @@ export const incrementViewCount = async (req, res) => {
 
  export const getAllImages = async (req, res) => {
   try {
-    const images = await Image.find(); // No user filter, so it will return all images
+    const images = await Image.find(); 
     res.status(200).json({ images, success: true });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching images', success: false });
