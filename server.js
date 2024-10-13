@@ -8,55 +8,64 @@ import cloudinary from "cloudinary";
 import MongoStore from 'connect-mongo';
 import cors from "cors";
 
-
-dotenv.config();
+// Load environment variables from .env file
+dotenv.config({ path: './config/config.env' });
 
 // Connect to MongoDB
 connectDB();
 
+// Initialize Express app
 const app = express();
 
-// Middleware
+// Middleware for JSON and URL-encoded data
 app.use(express.json());
 app.use(
-    express.urlencoded({
-      extended: true,
-    })
-  );
+  express.urlencoded({
+    extended: true,
+  })
+);
+
+// Session Middleware with MongoStore
+try {
   app.use(
     session({
-      secret: process.env.SESSION_SECRET, // Replace with your own secret
-      resave: false,                 // Don't save session if it hasn't been modified
-      saveUninitialized: false,      // Don't create session until something is stored
-      store: MongoStore.create({ 
-        mongoUrl: process.env.MONGO_URI, // Replace with your MongoDB connection string
-        collectionName: 'sessions'  // Session collection in MongoDB
+      secret: process.env.SESSION_SECRET, // Ensure this is defined in .env
+      resave: false, // Do not save session if it hasn't been modified
+      saveUninitialized: false, // Do not create session until something is stored
+      store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI, // MongoDB connection string from .env
+        collectionName: 'sessions', // Name of the session collection in MongoDB
       }),
       cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7, // Session lasts 7 days
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days session expiration
       },
-    }) 
-  );
-  app.use(
-    cors({
-      origin: process.env.FRONTEND_URL,
-      credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE"],
     })
   );
+} catch (error) {
+  console.error('Failed to connect to session store:', error);
+}
 
-  cloudinary.v2.config({
-    cloud_name: process.env.CLOUDINARY_CLIENT_NAME,
-    api_key: process.env.CLOUDINARY_CLIENT_API,
-    api_secret: process.env.CLOUDINARY_CLIENT_SECRET,
-  });
-  
+// CORS Middleware
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL, // Frontend URL from .env
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
+
+// Cloudinary Configuration
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLIENT_NAME, // Cloudinary name from .env
+  api_key: process.env.CLOUDINARY_CLIENT_API, // Cloudinary API key from .env
+  api_secret: process.env.CLOUDINARY_CLIENT_SECRET, // Cloudinary API secret from .env
+});
 
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/images', imageRoutes);
 
-// Start server
+// Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
