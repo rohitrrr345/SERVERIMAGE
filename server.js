@@ -38,7 +38,7 @@ try {
       }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 7,
-        secure: true, // Only send cookies over HTTPS in production
+        secure: false, // Only send cookies over HTTPS in production
         sameSite:  "none", // 'none' for cross-origin in production, 'lax' for local
         httpOnly: true,
       },
