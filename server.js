@@ -25,7 +25,7 @@ app.use(
   );
   app.use(
     session({
-      secret: 'your-session-secret', // Replace with your own secret
+      secret: process.env.SESSION_SECRET, // Replace with your own secret
       resave: false,                 // Don't save session if it hasn't been modified
       saveUninitialized: false,      // Don't create session until something is stored
       store: MongoStore.create({ 
