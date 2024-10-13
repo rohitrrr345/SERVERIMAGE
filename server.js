@@ -38,9 +38,10 @@ try {
       }),
       cookie: {
         maxAge: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
-        secure: true, // Only send cookies over HTTPS in production
-        sameSite:  "none", // 'none' for cross-origin in production, 'lax' for local
         httpOnly: true,
+        secure: true, // Only send cookies over HTTPS in production
+
+        sameSite:  "none", // 'none' for cross-origin in production, 'lax' for local
       },
     })
   );
